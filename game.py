@@ -14,22 +14,28 @@ pygame.display.set_caption("Snake Game")
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLACK = (0, 0, 0)
 
 # Set up the Snake
 block_size = 20
-snake_speed = 15
+snake_speed = 10
 
-font = pygame.font.SysFont(None, 30)
+font = pygame.font.SysFont(None, 40)
+
 
 def snake(block_size, snake_list):
     for x in snake_list:
         pygame.draw.rect(screen, GREEN, [x[0], x[1], block_size, block_size])
 
+
 def message_to_screen(msg, color):
     screen_text = font.render(msg, True, color)
     screen.blit(screen_text, [SCREEN_WIDTH / 6, SCREEN_HEIGHT / 3])
 
+
 def gameLoop():
+    global snake_speed  # Declare snake_speed as global variable
+
     game_over = False
     game_close = False
 
@@ -105,6 +111,13 @@ def gameLoop():
             randAppleX = round(random.randrange(0, SCREEN_WIDTH - block_size) / block_size) * block_size
             randAppleY = round(random.randrange(0, SCREEN_HEIGHT - block_size) / block_size) * block_size
             snake_length += 1
+            # Increase snake speed as it grows
+            snake_speed += 1
+
+        # Display score
+        score = snake_length - 1
+        score_text = font.render("Score: " + str(score), True, BLACK)
+        screen.blit(score_text, [10, 10])
 
         pygame.display.update()
 
@@ -112,5 +125,6 @@ def gameLoop():
 
     pygame.quit()
     quit()
+
 
 gameLoop()
