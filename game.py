@@ -20,9 +20,10 @@ class SnakeGame:
         for x in snake_list:
             pygame.draw.rect(self.screen, self.GREEN, [x[0], x[1], self.block_size, self.block_size])
 
-    def display_message(self, msg, color):
+    def display_message(self, msg, color, y_displacement=0):
         screen_text = self.font.render(msg, True, color)
-        self.screen.blit(screen_text, [self.SCREEN_WIDTH / 6, self.SCREEN_HEIGHT / 3])
+        text_rect = screen_text.get_rect(center=(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2 + y_displacement))
+        self.screen.blit(screen_text, text_rect)
 
     def game_loop(self):
         game_over = False
@@ -39,7 +40,8 @@ class SnakeGame:
         while not game_over:
             while game_close:
                 self.screen.fill(self.WHITE)
-                self.display_message("You lost! Press C-Play Again or Q-Quit", self.RED)
+                self.display_message("You lost! Press C-Play Again or Q-Quit", self.RED, y_displacement=-50)
+                self.display_message("Score: " + str(snake_length - 1), self.BLACK, y_displacement=50)
                 pygame.display.update()
 
                 for event in pygame.event.get():
@@ -89,6 +91,9 @@ class SnakeGame:
 
             self.draw_snake(snake_list)
 
+            score_text = self.font.render("Score: " + str(snake_length - 1), True, self.BLACK)
+            self.screen.blit(score_text, [10, 10])
+
             pygame.display.update()
 
             if lead_x == randAppleX and lead_y == randAppleY:
@@ -96,12 +101,6 @@ class SnakeGame:
                 randAppleY = round(random.randrange(0, self.SCREEN_HEIGHT - self.block_size) / self.block_size) * self.block_size
                 snake_length += 1
                 self.snake_speed += 1
-
-            score = snake_length - 1
-            score_text = self.font.render("Score: " + str(score), True, self.BLACK)
-            self.screen.blit(score_text, [10, 10])
-
-            pygame.display.update()
 
             pygame.time.Clock().tick(self.snake_speed)
 
