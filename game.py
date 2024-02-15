@@ -72,8 +72,6 @@ class SnakeGame:
                         lead_y_change = self.block_size
                         lead_x_change = 0
 
-            if lead_x >= self.SCREEN_WIDTH or lead_x < 0 or lead_y >= self.SCREEN_HEIGHT or lead_y < 0:
-                game_close = True
             lead_x += lead_x_change
             lead_y += lead_y_change
             self.screen.fill(self.WHITE)
@@ -101,6 +99,15 @@ class SnakeGame:
                 randAppleY = round(random.randrange(0, self.SCREEN_HEIGHT - self.block_size) / self.block_size) * self.block_size
                 snake_length += 1
                 self.snake_speed += 1
+
+            if lead_x >= self.SCREEN_WIDTH:
+                lead_x = 0
+            elif lead_x < 0:
+                lead_x = self.SCREEN_WIDTH - self.block_size
+            elif lead_y >= self.SCREEN_HEIGHT:
+                lead_y = 0
+            elif lead_y < 0:
+                lead_y = self.SCREEN_HEIGHT - self.block_size
 
             pygame.time.Clock().tick(self.snake_speed)
 
