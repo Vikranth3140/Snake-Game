@@ -15,6 +15,10 @@ class SnakeGame:
         self.block_size = 20
         self.snake_speed = 10
         self.font = pygame.font.SysFont(None, 40)
+        self.paused = False
+        self.pause_icon = pygame.image.load("pause.png")
+        self.pause_icon = pygame.transform.scale(self.pause_icon, (int(self.SCREEN_WIDTH * 0.05), int(self.SCREEN_WIDTH * 0.05)))
+        self.pause_icon_rect = self.pause_icon.get_rect(topright=(self.SCREEN_WIDTH - 10, 10))
 
     def draw_snake(self, snake_list):
         for x in snake_list:
@@ -71,45 +75,56 @@ class SnakeGame:
                     elif event.key == pygame.K_DOWN:
                         lead_y_change = self.block_size
                         lead_x_change = 0
+                    elif event.key == pygame.K_p:
+                        self.paused = not self.paused
 
-            lead_x += lead_x_change
-            lead_y += lead_y_change
-            self.screen.fill(self.WHITE)
-            pygame.draw.rect(self.screen, self.RED, [randAppleX, randAppleY, self.block_size, self.block_size])
-            snake_head = []
-            snake_head.append(lead_x)
-            snake_head.append(lead_y)
-            snake_list.append(snake_head)
-            if len(snake_list) > snake_length:
-                del snake_list[0]
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if self.pause_icon_rect.collidepoint(mouse_pos):
+                        self.paused = not self.paused
 
-            for x in snake_list[:-1]:
-                if x == snake_head:
-                    game_close = True
+            if not self.paused:
+                lead_x += lead_x_change
+                lead_y += lead_y_change
+                self.screen.fill(self.WHITE)
+                pygame.draw.rect(self.screen, self.RED, [randAppleX, randAppleY, self.block_size, self.block_size])
+                snake_head = []
+                snake_head.append(lead_x)
+                snake_head.append(lead_y)
+                snake_list.append(snake_head)
+                if len(snake_list) > snake_length:
+                    del snake_list[0]
 
-            self.draw_snake(snake_list)
+                for x in snake_list[:-1]:
+                    if x == snake_head:
+                        game_close = True
 
-            score_text = self.font.render("Score: " + str(snake_length - 1), True, self.BLACK)
-            self.screen.blit(score_text, [10, 10])
+                self.draw_snake(snake_list)
 
-            pygame.display.update()
+                score_text = self.font.render("Score: " + str(snake_length - 1), True, self.BLACK)
+                self.screen.blit(score_text, [10, 10])
 
-            if lead_x == randAppleX and lead_y == randAppleY:
-                randAppleX = round(random.randrange(0, self.SCREEN_WIDTH - self.block_size) / self.block_size) * self.block_size
-                randAppleY = round(random.randrange(0, self.SCREEN_HEIGHT - self.block_size) / self.block_size) * self.block_size
-                snake_length += 1
-                self.snake_speed += 1
+                self.pause_icon_rect = self.pause_icon.get_rect(topright=(self.SCREEN_WIDTH - 10, 10))
+                self.screen.blit(self.pause_icon, self.pause_icon_rect)
 
-            if lead_x >= self.SCREEN_WIDTH:
-                lead_x = 0
-            elif lead_x < 0:
-                lead_x = self.SCREEN_WIDTH - self.block_size
-            elif lead_y >= self.SCREEN_HEIGHT:
-                lead_y = 0
-            elif lead_y < 0:
-                lead_y = self.SCREEN_HEIGHT - self.block_size
+                pygame.display.update()
 
-            pygame.time.Clock().tick(self.snake_speed)
+                if lead_x == randAppleX and lead_y == randAppleY:
+                    randAppleX = round(random.randrange(0, self.SCREEN_WIDTH - self.block_size) / self.block_size) * self.block_size
+                    randAppleY = round(random.randrange(0, self.SCREEN_HEIGHT - self.block_size) / self.block_size) * self.block_size
+                    snake_length += 1
+                    self.snake_speed += 1
+
+                if lead_x >= self.SCREEN_WIDTH:
+                    lead_x = 0
+                elif lead_x < 0:
+                    lead_x = self.SCREEN_WIDTH - self.block_size
+                elif lead_y >= self.SCREEN_HEIGHT:
+                    lead_y = 0
+                elif lead_y < 0:
+                    lead_y = self.SCREEN_HEIGHT - self.block_size
+
+                pygame.time.Clock().tick(self.snake_speed)
 
         pygame.quit()
         quit()
