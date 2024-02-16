@@ -16,8 +16,10 @@ class SnakeGame:
         self.snake_speed = 10
         self.font = pygame.font.SysFont(None, 40)
         self.paused = False
-        self.pause_icon = pygame.image.load("pause.png")
+        self.pause_icon = pygame.image.load("images/pause.png")
+        self.play_icon = pygame.image.load("images/play.png")
         self.pause_icon = pygame.transform.scale(self.pause_icon, (int(self.SCREEN_WIDTH * 0.05), int(self.SCREEN_WIDTH * 0.05)))
+        self.play_icon = pygame.transform.scale(self.play_icon, (int(self.SCREEN_WIDTH * 0.05), int(self.SCREEN_WIDTH * 0.05)))
         self.pause_icon_rect = self.pause_icon.get_rect(topright=(self.SCREEN_WIDTH - 10, 10))
 
     def draw_snake(self, snake_list):
@@ -105,7 +107,10 @@ class SnakeGame:
                 self.screen.blit(score_text, [10, 10])
 
                 self.pause_icon_rect = self.pause_icon.get_rect(topright=(self.SCREEN_WIDTH - 10, 10))
-                self.screen.blit(self.pause_icon, self.pause_icon_rect)
+                if self.paused or game_close:
+                    self.screen.blit(self.play_icon, self.pause_icon_rect)
+                else:
+                    self.screen.blit(self.pause_icon, self.pause_icon_rect)
 
                 pygame.display.update()
 
