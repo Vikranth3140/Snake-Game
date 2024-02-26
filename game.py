@@ -21,6 +21,7 @@ class SnakeGame:
         self.pause_icon = pygame.transform.scale(self.pause_icon, (int(self.SCREEN_WIDTH * 0.05), int(self.SCREEN_WIDTH * 0.05)))
         self.play_icon = pygame.transform.scale(self.play_icon, (int(self.SCREEN_WIDTH * 0.05), int(self.SCREEN_WIDTH * 0.05)))
         self.pause_icon_rect = self.pause_icon.get_rect(topright=(self.SCREEN_WIDTH - 10, 10))
+        self.block_colors = [(26, 32, 100), (255, 0, 0), (139, 69, 19), (138, 43, 226), (54, 69, 79)]
 
     def draw_snake(self, snake_list):
         for x in snake_list:
@@ -40,8 +41,11 @@ class SnakeGame:
         lead_y_change = 0
         snake_list = []
         snake_length = 1
-        randAppleX = round(random.randrange(0, self.SCREEN_WIDTH - self.block_size) / self.block_size) * self.block_size
-        randAppleY = round(random.randrange(0, self.SCREEN_HEIGHT - self.block_size) / self.block_size) * self.block_size
+
+        num_blocks = 8
+        block_positions = [(random.randrange(0, self.SCREEN_WIDTH - self.block_size, self.block_size),
+                            random.randrange(0, self.SCREEN_HEIGHT - self.block_size, self.block_size)) for _ in range(num_blocks)]
+        block_colors = random.choices(self.block_colors, k=num_blocks)
 
         while not game_over:
             while game_close:
@@ -49,7 +53,6 @@ class SnakeGame:
                 self.display_message("You lost! Press C-Play Again or Q-Quit", self.RED, y_displacement=-50)
                 self.display_message("Score: " + str(snake_length - 1), self.BLACK, y_displacement=50)
                 pygame.display.update()
-
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         game_over = True
@@ -88,8 +91,14 @@ class SnakeGame:
             if not self.paused:
                 lead_x += lead_x_change
                 lead_y += lead_y_change
+                lead_x %= self.SCREEN_WIDTH
+                lead_y %= self.SCREEN_HEIGHT
+
                 self.screen.fill(self.WHITE)
-                pygame.draw.rect(self.screen, self.RED, [randAppleX, randAppleY, self.block_size, self.block_size])
+                pygame.draw.rect(self.screen, self.RED, [lead_x, lead_y, self.block_size, self.block_size])
+                for i, block_pos in enumerate(block_positions):
+                    pygame.draw.rect(self.screen, block_colors[i], [block_pos[0], block_pos[1], self.block_size, self.block_size])
+
                 snake_head = []
                 snake_head.append(lead_x)
                 snake_head.append(lead_y)
@@ -114,20 +123,15 @@ class SnakeGame:
 
                 pygame.display.update()
 
-                if lead_x == randAppleX and lead_y == randAppleY:
-                    randAppleX = round(random.randrange(0, self.SCREEN_WIDTH - self.block_size) / self.block_size) * self.block_size
-                    randAppleY = round(random.randrange(0, self.SCREEN_HEIGHT - self.block_size) / self.block_size) * self.block_size
-                    snake_length += 1
-                    self.snake_speed += 1
-
-                if lead_x >= self.SCREEN_WIDTH:
-                    lead_x = 0
-                elif lead_x < 0:
-                    lead_x = self.SCREEN_WIDTH - self.block_size
-                elif lead_y >= self.SCREEN_HEIGHT:
-                    lead_y = 0
-                elif lead_y < 0:
-                    lead_y = self.SCREEN_HEIGHT - self.block_size
+                for i, block_pos in enumerate(block_positions[:]):
+                    if snake_head[0] == block_pos[0] and snake_head[1] == block_pos[1]:
+                        snake_length += 1
+                        self.snake_speed += 1
+                        block_positions.remove(block_pos)
+                        block_colors.pop(i)
+                        block_positions.append((random.randrange(0, self.SCREEN_WIDTH - self.block_size, self.block_size),
+                                                random.randrange(0, self.SCREEN_HEIGHT - self.block_size, self.block_size)))
+                        block_colors.append(random.choice(self.block_colors))
 
                 pygame.time.Clock().tick(self.snake_speed)
 
