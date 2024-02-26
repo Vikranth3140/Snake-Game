@@ -53,6 +53,7 @@ class SnakeGame:
                 self.display_message("You lost! Press C-Play Again or Q-Quit", self.RED, y_displacement=-50)
                 self.display_message("Score: " + str(snake_length - 1), self.BLACK, y_displacement=50)
                 pygame.display.update()
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         game_over = True

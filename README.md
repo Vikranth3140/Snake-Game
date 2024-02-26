@@ -49,4 +49,4 @@ Use the arrow keys to control the snake. Press Pause icon to pause and resume th
 License
 -------
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).
